@@ -1,0 +1,12 @@
+[consul]
+172.16.9.242
+172.16.9.99
+172.16.9.98
+
+[vault]
+172.16.9.89
+172.16.9.183
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/nishant/Documents/PAYTM_AWS/pemfilesforawspaytm/PEM/ansible-managed.pem
