@@ -1,0 +1,108 @@
+---
+  - name: Run apt-get update
+    apt:
+      update_cache: yes
+      cache_valid_time: 86400
+
+  - name: Install unzip & tools if req
+    apt:
+      name: "{{ item }}"
+    with_items:
+      - unzip
+      - upstart
+
+  - name: Download the consul binary
+    get_url:
+      url:  https://releases.hashicorp.com/consul/1.2.2/consul_1.2.2_linux_amd64.zip
+      dest: /home/ubuntu
+
+  - name: Unzip the consul binary
+    unarchive:
+      src: /home/ubuntu/consul_1.2.2_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+
+  - name: Create consul user
+    user:
+      name: consul
+
+  - name: Create Directory structure for consul
+    file:
+      path: /etc/consul.d
+      state: directory
+      mode: 0755
+
+  - name: Create Directory for consul to store persistant data
+    file:
+      path: /var/consul
+      state: directory
+      owner: consul
+      group: consul
+      mode: 0755
+
+
+  - name: Create Directory structure for consul
+    file:
+      path: /etc/consul.d/{{ item }}
+      state: directory
+      mode: 0755
+    with_items:
+      - bootstrap
+      - server
+      - client
+
+  - name: Configure bootstraps on all
+    template:
+      src: bootstrap_config.json.j2
+      dest: /etc/consul.d/bootstrap/config.json
+
+#  - name: Configure the server
+#    template:
+#      src: server_config.json.j2
+#      dest: /etc/consul.d/server/config.json
+
+#  - name: Add the ip's of other servers to join cluster
+#    lineinfile:
+#        path: /etc/consul.d/server/config.json
+#        regexp: '^"enable_syslog"'
+#        insertafter: '^"enable_syslog"'
+#        line: '"start_join": ["{{ groups['consul'][1] }}", "{{ groups['consul'][2] }}"]'
+#    when: inventory_hostname == '{{ groups['consul'][0] }}'
+
+  - name: Configure consul Server 1
+    template:
+      src: server_config_1.json.j2
+      dest: /etc/consul.d/server/config.json
+    when: inventory_hostname == '{{ groups['consul'][0] }}'
+
+  - name: Configure consul Server 2
+    template:
+      src: server_config_2.json.j2
+      dest: /etc/consul.d/server/config.json
+    when: inventory_hostname == '{{ groups['consul'][1] }}'
+
+  - name: Configure consul Server 3
+    template:
+      src: server_config_3.json.j2
+      dest: /etc/consul.d/server/config.json
+    when: inventory_hostname == '{{ groups['consul'][2] }}'
+
+  - name: Plece the server upstart script on the consul servers
+    template:
+      src: server-systemctl-consul.conf.j2
+      dest: /etc/systemd/system/consul.service
+
+  - name: force systemd to reread configs
+    systemd:
+      daemon_reload: yes
+
+  - name: Make sure a service is running
+    systemd:
+      state: started
+      name: consul.service
+
+
+  - name: enable service consul.service
+    systemd:
+      name: consul.service
+      enabled: yes

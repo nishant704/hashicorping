@@ -1,0 +1,9 @@
+{
+    "bootstrap": false,
+    "server": true,
+    "datacenter": "aws",
+    "data_dir": "/var/consul",
+    "log_level": "INFO",
+    "enable_syslog": true,
+    "start_join": ["{{ groups['consul'][0] }}", "{{ groups['consul'][1] }}"]
+}
