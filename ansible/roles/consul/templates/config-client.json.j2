@@ -5,5 +5,8 @@
     "data_dir": "/var/consul",
     "log_level": "INFO",
     "enable_syslog": true,
+    "ui": true,
+    "bind_addr": "{{ ansible_default_ipv4.address }}",
+    "client_addr": "127.0.0.1",
     "retry_join": ["provider=aws tag_key=Cluster tag_value=consul-cluster"]
 }

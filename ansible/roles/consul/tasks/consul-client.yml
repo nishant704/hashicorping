@@ -9,7 +9,6 @@
       name: "{{ item }}"
     with_items:
       - unzip
-      - upstart
 
   - name: Download the consul binary
     get_url:
@@ -61,7 +60,7 @@
       src: config-client.json.j2
       dest: /etc/consul.d/client/config.json
 
-  - name: Place the server upstart script on the consul servers
+  - name: Place the server systemd script on the consul servers
     template:
       src: client-systemctl-consul.conf.j2
       dest: /etc/systemd/system/consul.service

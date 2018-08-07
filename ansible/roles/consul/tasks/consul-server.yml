@@ -9,7 +9,6 @@
       name: "{{ item }}"
     with_items:
       - unzip
-      - upstart
 
   - name: Download the consul binary
     get_url:
@@ -61,17 +60,10 @@
       src: config-server.json.j2
       dest: /etc/consul.d/server/config.json
 
-  - name: Place the server upstart script on the consul servers
+  - name: Place the server systemd script on the consul servers
     template:
       src: server-systemctl-consul.conf.j2
       dest: /etc/systemd/system/consul.service
-
-#  - name: Join consul-1 from consul-2
-#    lineinfile:
-#      dest: /etc/consul.d/server/config.json
-#      insertafter: '^enable_syslog'
-#      regexp: '^enable_syslog'
-#      line: '"start_join": ["{{ groups['consul'][0] }}"]'
 
   - name: Place the UI json
     template:
