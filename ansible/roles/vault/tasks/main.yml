@@ -41,6 +41,24 @@
       src: vault-systemctl.conf.j2
       dest: /etc/systemd/system/vault.service
 
+  - name: Adding the path in the bashrc files
+    lineinfile:
+      dest: /etc/skel/.bashrc
+      line: 'export VAULT_ADDR=http://127.0.0.1:8200'
+      insertafter: 'EOF'
+      state: present
+
+  - name: Set vars
+    shell: . /etc/skel/.bashrc && echo $VAULT_ADDR
+    args:
+      executable: /bin/bash
+    register: vaultbind
+
+
+  - name: Show var
+    debug:
+      var: vaultbind.stdout
+
   - name: Make sure a service is running
     systemd:
       state: started
