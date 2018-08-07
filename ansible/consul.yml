@@ -1,7 +1,6 @@
 ---
-  - hosts: consul
+  - hosts: consul:vault
     gather_facts: yes
     become: true
-    #become_user: root
     roles:
       - { role: consul }

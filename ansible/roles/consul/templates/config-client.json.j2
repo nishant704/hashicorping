@@ -1,9 +1,9 @@
 {
     "bootstrap": false,
-    "server": true,
+    "server": false,
     "datacenter": "aws",
     "data_dir": "/var/consul",
     "log_level": "INFO",
     "enable_syslog": true,
-    "start_join": ["{{ groups['consul'][0] }}", "{{ groups['consul'][1] }}"]
+    "retry_join": ["provider=aws tag_key=Cluster tag_value=consul-cluster"]
 }
