@@ -43,15 +43,13 @@
 
   - name: Adding the path in the bashrc files
     lineinfile:
-      dest: /etc/skel/.bashrc
+      dest: /etc/environment
       line: 'export VAULT_ADDR=http://127.0.0.1:8200'
       insertafter: 'EOF'
       state: present
 
   - name: Set vars
-    shell: . /etc/skel/.bashrc && echo $VAULT_ADDR
-    args:
-      executable: /bin/bash
+    shell: . /etc/environment && echo $VAULT_ADDR
     register: vaultbind
 
 
